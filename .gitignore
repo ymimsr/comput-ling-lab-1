@@ -1,2 +1,4 @@
 # Project exclude paths
 /target/
+
+/src/main/resources/ru/nsu/fit/comput_ling_lab_1/dict.opcorpora.xml
