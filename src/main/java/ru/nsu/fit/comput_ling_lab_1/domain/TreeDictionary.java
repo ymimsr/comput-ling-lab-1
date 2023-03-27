@@ -1,5 +1,6 @@
 package ru.nsu.fit.comput_ling_lab_1.domain;
 
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -65,6 +66,11 @@ public class TreeDictionary {
     // used after initializing dictionary
     public Word getWord(String sWord) {
         GraphemeNode curNode = roots.get(String.valueOf(sWord.charAt(0)).toLowerCase(Locale.ROOT));
+
+        // probably english word or smth
+        if (curNode == null)
+            return null;
+
         for (int i = 1; i < sWord.length(); i++) {
             String grapheme = String.valueOf(sWord.charAt(i));
             curNode = curNode.getChildren().get(grapheme);
@@ -72,6 +78,9 @@ public class TreeDictionary {
             if (curNode == null)
                 return null;
         }
+
+        if (curNode.getWords().isEmpty())
+            return null;
 
         // currently, returns a first word from set
         return curNode.getWords().iterator().next();

@@ -5,6 +5,7 @@ import ru.nsu.fit.comput_ling_lab_1.domain.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Optional;
 
@@ -20,6 +21,16 @@ public class Solution {
         System.out.println("Finished building IR");
         System.out.println("Ready to analyze");
         MorphAnalyzer morphAnalyzer = new MorphAnalyzer(treeDictionary);
+
+        for (Lemma lemma : dictionary.getLemmas()) {
+            if (lemma.getContent().equals("4")) {
+                System.out.println(lemma.getWords());
+                for (Grammeme grammeme : lemma.getGrammemes()) {
+                    System.out.println(grammeme);
+                }
+                break;
+            }
+        }
 
         try {
             BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));

@@ -30,8 +30,10 @@ public class MorphAnalyzer {
             System.out.println("Analyzing word " + sWord);
             Word word = treeDictionary.getWord(sWord);
 
-            if (word == null)
+            if (word == null) {
                 unidentifiedWords.add(sWord);
+                continue;
+            }
 
             if (lemmaFrequencyMap.containsKey(word.getParent())) {
                 lemmaFrequencyMap.replace(word.getParent(), lemmaFrequencyMap.get(word.getParent()) + 1);
