@@ -120,4 +120,9 @@ public class MorphAnalyzer {
         System.out.println("==========");
     }
 
+    public void printStats() {
+        System.out.println("Нераспознанных слов: "
+                + (100.0 * unidentifiedWords.size() / (resultWords.size() + unidentifiedWords.size())) + "%.");
+    }
+
 }

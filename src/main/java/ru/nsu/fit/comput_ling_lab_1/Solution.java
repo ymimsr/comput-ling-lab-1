@@ -7,6 +7,7 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class Solution {
@@ -25,7 +26,7 @@ public class Solution {
         try {
             File rootFolder = new File("E:/projects/comput-ling-lab-1/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus");
 
-            for (final File file : rootFolder.listFiles()) {
+            for (final File file : Objects.requireNonNull(rootFolder.listFiles())) {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
                 String text = reader.readLine();
                 morphAnalyzer.analyze(text);
@@ -33,6 +34,7 @@ public class Solution {
             }
 
             morphAnalyzer.printResults();
+            morphAnalyzer.printStats();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
