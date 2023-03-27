@@ -13,6 +13,10 @@ import java.util.Set;
 public class MorphAnalyzer {
 
     private final TreeDictionary treeDictionary;
+    private final Map<Lemma, Integer> lemmaFrequencyMap = new HashMap<>();
+    private final Map<Lemma, Integer> lemmaTextFrequencyMap = new HashMap<>();
+    private final Set<Word> resultWords = new HashSet<>();
+    private final Set<String> unidentifiedWords = new HashSet<>();
 
     public MorphAnalyzer(TreeDictionary treeDictionary) {
         this.treeDictionary = treeDictionary;
@@ -21,10 +25,7 @@ public class MorphAnalyzer {
     public void analyze(String text) {
         // removes spaces, punctuation marks etc
         String[] sWords = text.split("[\\p{Punct}\\s]+");
-        // frequency lemma map
-        Map<Lemma, Integer> lemmaFrequencyMap = new HashMap<>();
-        Set<Word> resultWords = new HashSet<>();
-        Set<String> unidentifiedWords = new HashSet<>();
+        Set<Lemma> lemmasInThisText = new HashSet<>();
 
         for (String sWord : sWords) {
             System.out.println("Analyzing word " + sWord);
@@ -35,6 +36,15 @@ public class MorphAnalyzer {
                 continue;
             }
 
+            if (lemmasInThisText.add(word.getParent())) {
+                if (lemmaTextFrequencyMap.containsKey(word.getParent())) {
+                    lemmaTextFrequencyMap.replace(word.getParent(),
+                            lemmaTextFrequencyMap.get(word.getParent()) + 1);
+                } else {
+                    lemmaTextFrequencyMap.put(word.getParent(), 1);
+                }
+            }
+
             if (lemmaFrequencyMap.containsKey(word.getParent())) {
                 lemmaFrequencyMap.replace(word.getParent(), lemmaFrequencyMap.get(word.getParent()) + 1);
             } else {
@@ -43,7 +53,9 @@ public class MorphAnalyzer {
 
             resultWords.add(word);
         }
+    }
 
+    public void printResults() {
         for (Word word : resultWords) {
             System.out.println("==========");
 
@@ -77,7 +89,8 @@ public class MorphAnalyzer {
             }
             System.out.println();
 
-            System.out.println("Частота встречи: " + lemmaFrequencyMap.get(word.getParent()) + " раз.");
+            System.out.println("Частота: " + lemmaFrequencyMap.get(word.getParent()) + " раз.");
+            System.out.println("Текстовая частота: " + lemmaTextFrequencyMap.get(word.getParent()) + " раз.");
         }
 
         System.out.println("==========");
