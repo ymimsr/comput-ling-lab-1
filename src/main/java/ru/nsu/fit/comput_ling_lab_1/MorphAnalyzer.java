@@ -121,8 +121,10 @@ public class MorphAnalyzer {
     }
 
     public void printStats() {
-        System.out.println("Нераспознанных слов: "
+        System.out.println("Соотношение нераспознанных слов к распознанным: "
                 + (100.0 * unidentifiedWords.size() / (resultWords.size() + unidentifiedWords.size())) + "%.");
+        System.out.println("Количество распознанных слов: " + resultWords.size());
+        System.out.println("Количество нераспознанных слов: " + unidentifiedWords.size());
     }
 
 }
