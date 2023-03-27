@@ -5,10 +5,8 @@ import ru.nsu.fit.comput_ling_lab_1.domain.Lemma;
 import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionary;
 import ru.nsu.fit.comput_ling_lab_1.domain.Word;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MorphAnalyzer {
 
@@ -53,10 +51,20 @@ public class MorphAnalyzer {
 
             resultWords.add(word);
         }
+
+        sort();
+    }
+
+    private List<Word> sort() {
+        return resultWords.stream()
+                .sorted(Comparator.comparing(o -> lemmaFrequencyMap.get(o.getParent())))
+                .collect(Collectors.toList());
     }
 
     public void printResults() {
-        for (Word word : resultWords) {
+        List<Word> sortedWords = sort();
+
+        for (Word word : sortedWords) {
             System.out.println("==========");
 
             System.out.println("Слово: " + word.getContent());

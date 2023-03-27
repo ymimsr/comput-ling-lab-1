@@ -65,6 +65,9 @@ public class TreeDictionary {
 
     // used after initializing dictionary
     public Word getWord(String sWord) {
+        if (sWord.isBlank())
+            return null;
+
         GraphemeNode curNode = roots.get(String.valueOf(sWord.charAt(0)).toLowerCase(Locale.ROOT));
 
         // probably english word or smth

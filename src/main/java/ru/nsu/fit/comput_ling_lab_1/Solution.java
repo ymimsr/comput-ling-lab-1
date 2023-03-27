@@ -22,22 +22,17 @@ public class Solution {
         System.out.println("Ready to analyze");
         MorphAnalyzer morphAnalyzer = new MorphAnalyzer(treeDictionary);
 
-        for (Lemma lemma : dictionary.getLemmas()) {
-            if (lemma.getContent().equals("4")) {
-                System.out.println(lemma.getWords());
-                for (Grammeme grammeme : lemma.getGrammemes()) {
-                    System.out.println(grammeme);
-                }
-                break;
-            }
-        }
-
         try {
-            BufferedReader consoleReader = new BufferedReader(new InputStreamReader(System.in));
-            String line;
-            while ((line = consoleReader.readLine()) != null && !line.equals("") && !line.equals("стоп")) {
-                morphAnalyzer.analyze(line);
+            File rootFolder = new File("E:/projects/comput-ling-lab-1/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus");
+
+            for (final File file : rootFolder.listFiles()) {
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String text = reader.readLine();
+                morphAnalyzer.analyze(text);
+                reader.close();
             }
+
+            morphAnalyzer.printResults();
         } catch (IOException exception) {
             exception.printStackTrace();
         }
