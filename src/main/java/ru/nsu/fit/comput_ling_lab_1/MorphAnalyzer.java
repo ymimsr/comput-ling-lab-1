@@ -22,15 +22,15 @@ public class MorphAnalyzer {
 
     public void analyze(String text) {
         // removes spaces, punctuation marks etc
-        String[] sWords = text.split("[\\p{Punct}\\s]+");
+        List<String> tokens = getTextTokens(text);
         Set<Lemma> lemmasInThisText = new HashSet<>();
 
-        for (String sWord : sWords) {
-            System.out.println("Analyzing word " + sWord);
-            Word word = treeDictionary.getWord(sWord);
+        for (String token : tokens) {
+            System.out.println("Analyzing word " + token);
+            Word word = treeDictionary.getWord(token);
 
             if (word == null) {
-                unidentifiedWords.add(sWord);
+                unidentifiedWords.add(token);
                 continue;
             }
 
@@ -125,6 +125,65 @@ public class MorphAnalyzer {
                 + (100.0 * unidentifiedWords.size() / (resultWords.size() + unidentifiedWords.size())) + "%.");
         System.out.println("Количество распознанных слов: " + resultWords.size());
         System.out.println("Количество нераспознанных слов: " + unidentifiedWords.size());
+    }
+
+    public List<String> getTextTokens(String text) {
+        List<String> tokens = new ArrayList<>();
+
+        Scanner scanner = new Scanner(text);
+        while (scanner.hasNext()) {
+            StringBuilder curWord = new StringBuilder();
+            String wordToParse = scanner.next();
+            for (int i = 0; i < wordToParse.length(); i++) {
+                char symbol = wordToParse.charAt(i);
+
+                if (!((symbol >= 'а' && symbol <= 'я')
+                        || (symbol >= 'А' && symbol <= 'Я')
+                        || (symbol >= '0' && symbol <= '9')
+                        || (symbol == '-'))) {
+                    if (i == 0) {
+                        int newI = -1;
+                        for (int k = 0; k < wordToParse.length(); k++) {
+                            symbol = wordToParse.charAt(i);
+                            if ((symbol >= 'а' && symbol <= 'я')
+                                    || (symbol >= 'А' && symbol <= 'Я')
+                                    || (symbol >= '0' && symbol <= '9')
+                                    || (symbol == '-')) {
+                                newI = k;
+                            }
+                        }
+
+                        if (newI == -1)
+                            break;
+                    }
+
+                    boolean isInvalidWord = false;
+                    for (int k = i + 1; k < wordToParse.length(); k++) {
+                        symbol = wordToParse.charAt(i);
+                        if ((symbol >= 'а' && symbol <= 'я')
+                                || (symbol >= 'А' && symbol <= 'Я')
+                                || (symbol >= '0' && symbol <= '9')
+                                || (symbol == '-')) {
+                            isInvalidWord = true;
+                            break;
+                        }
+                    }
+
+                    if (!isInvalidWord && !curWord.isEmpty())
+                        tokens.add(curWord.toString());
+
+                    break;
+                } else {
+                    curWord.append(symbol);
+                }
+
+                if (i == wordToParse.length() - 1 && !curWord.isEmpty())
+                    tokens.add(curWord.toString());
+            }
+        }
+
+
+        return tokens;
     }
 
 }

@@ -28,14 +28,24 @@ public class Solution {
 
             for (final File file : Objects.requireNonNull(rootFolder.listFiles())) {
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                String text = reader.readLine();
-                morphAnalyzer.analyze(text);
+                StringBuilder text = new StringBuilder();
+                String newLine;
+                while ((newLine = reader.readLine()) != null) {
+                    text.append(newLine).append("\n");
+                }
+                morphAnalyzer.analyze(text.toString());
                 reader.close();
             }
 
             morphAnalyzer.printResults();
             morphAnalyzer.printStats();
         } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException exception) {
             exception.printStackTrace();
         }
     }
