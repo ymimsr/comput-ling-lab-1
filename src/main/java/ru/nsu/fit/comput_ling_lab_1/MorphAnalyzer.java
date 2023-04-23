@@ -26,7 +26,7 @@ public class MorphAnalyzer {
         Set<Lemma> lemmasInThisText = new HashSet<>();
 
         for (String token : tokens) {
-            System.out.println("Analyzing word " + token);
+            //System.out.println("Analyzing word " + token);
             Word word = treeDictionary.getWord(token);
 
             if (word == null) {
