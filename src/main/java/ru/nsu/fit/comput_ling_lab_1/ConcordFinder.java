@@ -42,6 +42,8 @@ public class ConcordFinder {
                         normals[i] = treeDictionary.getWord(normals[i]).getParent().getContent();
                 }
                 for (int i = 1; i <= leftAppendix; i++)
+                    NConcordances(normals, goal, tokens, i, 0);
+                for (int i = 0; i <= leftAppendix; i++)
                     for (int j = 1; j <= rightAppendix; j++)
                         NConcordances(normals, goal, tokens, i, j);
             }
@@ -66,7 +68,7 @@ public class ConcordFinder {
         return sortedMap;
     }
     private static void NConcordances(String[] normals, String[] goal, String[] tokens, Integer leftAppendix, Integer rightAppendix){
-        for (int i = 0; i < normals.length - goal.length + 1; i++) {
+        for (int i = leftAppendix; i < normals.length - goal.length - rightAppendix + 1; i++) {
             for (int k = 0; k < goal.length; k++) {
                 if (!normals[i+k].equals(goal[k]))
                     break;
@@ -75,15 +77,11 @@ public class ConcordFinder {
                     for (int j = i + 1; j < goal.length + i; j++) {
                         concordanceBuild.append(" ").append(tokens[j]);
                     }
-                    for (int j = 1; j <= leftAppendix; j++) {
-                        int jk = i - j;
-                        if (jk >= 0 && jk < tokens.length)
-                            concordanceBuild.insert(0, tokens[jk] + " ");
+                    for (int j = i - 1; j >= i - leftAppendix; j--) {
+                        concordanceBuild.insert(0, tokens[j] + " ");
                     }
-                    for (int j = 1; j <= rightAppendix; j++) {
-                        int jk = i + j;
-                        if (jk >= 0 && jk < tokens.length)
-                            concordanceBuild.append(" ").append(tokens[jk + goal.length - 1]);
+                    for (int j = i + 1; j <= i + rightAppendix; j++) {
+                        concordanceBuild.append(" ").append(tokens[j + goal.length - 1]);
                     }
                     String concordance = concordanceBuild.toString();
                     if (concordances.containsKey(concordance))

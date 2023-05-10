@@ -24,7 +24,7 @@ public class KateConcordances {
 
         HashMap<String, Integer> result = ConcordFinder.findConcordances(
                 new File(Solution.class.getResource("barbies").toURI()),
-                treeDictionary, "кукла", 2, 1);
+                treeDictionary, "печать", 2, 1);
         System.out.println(result.size());
         for (Map.Entry<String, Integer> entry : result.entrySet()) System.out.println(entry.getValue() + " " + entry.getKey());
     }
