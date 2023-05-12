@@ -68,7 +68,8 @@ public class NGram {
             stringBuilder.append(lemma.getContent()).append(",");
         }
         stringBuilder.append(frequency).append(",");
-        stringBuilder.append(textFrequency).append(">");
+        stringBuilder.append(textFrequency).append(",");
+        stringBuilder.append(textFrequency * 1.0 / frequency).append(">");
         return stringBuilder.toString();
     }
 

@@ -6,6 +6,7 @@ import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionary;
 import ru.nsu.fit.comput_ling_lab_1.domain.Word;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class NGramAnalyzer {
@@ -19,6 +20,10 @@ public class NGramAnalyzer {
     public NGramAnalyzer(TreeDictionary treeDictionary, MorphAnalyzer morphAnalyzer) {
         this.treeDictionary = treeDictionary;
         this.morphAnalyzer = morphAnalyzer;
+    }
+
+    public Map<Integer, List<NGram>> getnGramsByN() {
+        return nGramsByN;
     }
 
     public void analyze(
@@ -58,6 +63,23 @@ public class NGramAnalyzer {
 
         Lemma lemma = word.getParent();
         return lemmaNGram.get(lemma);
+    }
+
+    public List<NGram> findByNestedNGram(List<String> sNGram) {
+        List<Lemma> lemmas = new ArrayList<>();
+        for (String sWord: sNGram) {
+            Word word;
+            if ((word = treeDictionary.getWord(sWord)) != null) {
+                lemmas.add(word.getParent());
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
+        return lemmaNGram.get(lemmas.get(0))
+                .stream()
+                .filter(it -> it.getLemmas().containsAll(lemmas))
+                .collect(Collectors.toList());
     }
 
     private List<Lemma> tokensToLemmas(List<String> tokens) {

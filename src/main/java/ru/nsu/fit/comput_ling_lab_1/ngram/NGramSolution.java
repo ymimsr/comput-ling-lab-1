@@ -12,6 +12,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class NGramSolution {
 
@@ -28,10 +31,18 @@ public class NGramSolution {
         NGramAnalyzer nGramAnalyzer = new NGramAnalyzer(treeDictionary, morphAnalyzer);
 
         File rootFolder = new File("E:/projects/comput-ling-lab-1/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus");
-        nGramAnalyzer.analyze(rootFolder, 20, 10);
+        nGramAnalyzer.analyze(rootFolder, 10, 10);
 
-        for (NGram nGram : nGramAnalyzer.findByWord("убийство")) {
+        for (NGram nGram : nGramAnalyzer.findByNestedNGram(List.of("убийство", "человека"))) {
             System.out.println(nGram);
+        }
+
+        System.out.println("===");
+
+        for (Map.Entry<Integer, List<NGram>> pair : nGramAnalyzer.getnGramsByN().entrySet()) {
+            for (NGram nGram : pair.getValue()) {
+                System.out.println("N = " + pair.getKey() + "NGram = " + nGram.toString());
+            }
         }
 
     }
