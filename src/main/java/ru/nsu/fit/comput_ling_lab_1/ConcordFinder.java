@@ -28,7 +28,7 @@ public class ConcordFinder {
         }
         try {
             for (final File file : Objects.requireNonNull(rootFolder.listFiles())) {
-                String text = new String(Files.readAllBytes(file.toPath()), Charset.forName("windows-1251"));
+                String text = new String(Files.readAllBytes(file.toPath()));
                 String [] tokens = text.split("[ \n\r]");
                 String [] normals = new String[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {

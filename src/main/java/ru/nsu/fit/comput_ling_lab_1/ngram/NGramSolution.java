@@ -9,9 +9,11 @@ import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionary;
 import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionaryMapper;
 
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class NGramSolution {
 
@@ -28,11 +30,23 @@ public class NGramSolution {
         NGramAnalyzer nGramAnalyzer = new NGramAnalyzer(treeDictionary, morphAnalyzer);
 
         File rootFolder = new File("E:/projects/comput-ling-lab-1/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus");
-        nGramAnalyzer.analyze(rootFolder, 20, 10);
+        nGramAnalyzer.analyze(rootFolder, 3, 10);
 
-        for (NGram nGram : nGramAnalyzer.findByWord("убийство")) {
+        for (NGram nGram : nGramAnalyzer.findByNestedNGram(List.of("убийство", "человека"))) {
             System.out.println(nGram);
         }
+
+        try {
+            System.setOut(new PrintStream(
+                    new BufferedOutputStream(
+                            new FileOutputStream(
+                                    "E:\\projects\\comput-ling-lab-1\\src\\main\\resources\\ru\\nsu\\fit\\comput_ling_lab_1\\ngrams.txt"
+                            ))));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        nGramAnalyzer.printStats();
 
     }
 

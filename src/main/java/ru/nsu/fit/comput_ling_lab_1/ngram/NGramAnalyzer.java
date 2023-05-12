@@ -6,6 +6,7 @@ import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionary;
 import ru.nsu.fit.comput_ling_lab_1.domain.Word;
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class NGramAnalyzer {
@@ -15,10 +16,18 @@ public class NGramAnalyzer {
     private final List<List<Lemma>> textsLemmas = new ArrayList<>();
     private final Map<Lemma, List<NGram>> lemmaNGram = new HashMap<>();
     private final Map<Integer, List<NGram>> nGramsByN = new HashMap<>();
+    private final List<NGram> stabilityRemoved = new ArrayList<>();
+    private final List<NGram> thresholdRemoved = new ArrayList<>();
+
+    private final double stabilityValue = 0.5;
 
     public NGramAnalyzer(TreeDictionary treeDictionary, MorphAnalyzer morphAnalyzer) {
         this.treeDictionary = treeDictionary;
         this.morphAnalyzer = morphAnalyzer;
+    }
+
+    public Map<Integer, List<NGram>> getnGramsByN() {
+        return nGramsByN;
     }
 
     public void analyze(
@@ -51,6 +60,34 @@ public class NGramAnalyzer {
         }
     }
 
+    public void printStats() {
+        System.out.println("Size of NGram Dictionary: "
+                + nGramsByN.values()
+                .stream()
+                .map(List::size)
+                .reduce(Integer::sum)
+                .orElse(0));
+        System.out.println("Filtered because of threshold: " + thresholdRemoved.size());
+        System.out.println("Filtered because of stability: " + stabilityRemoved.size());
+
+        System.out.println("NGram Dictionary: ");
+        for (Map.Entry<Integer, List<NGram>> pair : nGramsByN.entrySet()) {
+            for (NGram nGram : pair.getValue()) {
+                System.out.println("N = " + pair.getKey() + " " + "NGram = " + nGram.toString());
+            }
+        }
+
+        System.out.println("Filtered because of threshold: ");
+        for (NGram nGram : thresholdRemoved) {
+            System.out.println("N = " + nGram.getN() + " " + "NGram = " + nGram);
+        }
+
+        System.out.println("Filtered because of stability: ");
+        for (NGram nGram : stabilityRemoved) {
+            System.out.println("N = " + nGram.getN() + " " + "NGram = " + nGram);
+        }
+    }
+
     public List<NGram> findByWord(String sWord) {
         Word word;
         if ((word = treeDictionary.getWord(sWord)) == null)
@@ -58,6 +95,23 @@ public class NGramAnalyzer {
 
         Lemma lemma = word.getParent();
         return lemmaNGram.get(lemma);
+    }
+
+    public List<NGram> findByNestedNGram(List<String> sNGram) {
+        List<Lemma> lemmas = new ArrayList<>();
+        for (String sWord: sNGram) {
+            Word word;
+            if ((word = treeDictionary.getWord(sWord)) != null) {
+                lemmas.add(word.getParent());
+            } else {
+                return new ArrayList<>();
+            }
+        }
+
+        return lemmaNGram.get(lemmas.get(0))
+                .stream()
+                .filter(it -> it.getLemmas().containsAll(lemmas))
+                .collect(Collectors.toList());
     }
 
     private List<Lemma> tokensToLemmas(List<String> tokens) {
@@ -87,7 +141,7 @@ public class NGramAnalyzer {
                     extendedLemmas.add(lemma);
 
                     // otherwise, such nGram hasn't been parsed yet
-                    if (nGramsByN.get(n).stream().anyMatch(it -> it.getLemmas().equals(extendedLemmas))) {
+                    if (lemmaNGram.get(lemma).stream().anyMatch(it -> it.getLemmas().equals(extendedLemmas))) {
                         NGram presNGram = nGramsByN.get(n)
                                 .stream()
                                 .filter(it -> it.getLemmas().equals(extendedLemmas))
@@ -115,6 +169,22 @@ public class NGramAnalyzer {
         for (NGram nGram : nGramsByN.get(n)) {
             if (nGram.getFrequency() < threshold) {
                 toRemove.add(nGram);
+                thresholdRemoved.add(nGram);
+            }
+        }
+
+        for (NGram nGram : nGramsByN.get(n - 1)) {
+            List<NGram> leftAndRightExtensions = lemmaNGram.get(nGram.getLemmas().get(0))
+                    .stream()
+                    .filter(it -> it.getLemmas().containsAll(nGram.getLemmas()))
+                    .collect(Collectors.toList());
+
+            for (NGram extension : leftAndRightExtensions) {
+                if (extension.getFrequency() * 1.0 / nGram.getFrequency() > stabilityValue) {
+                    toRemove.add(nGram);
+                    stabilityRemoved.add(nGram);
+                    break;
+                }
             }
         }
 
@@ -167,6 +237,7 @@ public class NGramAnalyzer {
         for (NGram nGram : nGramsByN.get(2)) {
             if (nGram.getFrequency() < threshold) {
                 toRemove.add(nGram);
+                thresholdRemoved.add(nGram);
             }
         }
 
