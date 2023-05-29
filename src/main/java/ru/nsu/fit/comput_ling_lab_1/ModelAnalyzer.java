@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ModelAnalyzer {
     private static List<String> fragments = new ArrayList<>();
@@ -38,10 +39,23 @@ public class ModelAnalyzer {
     }
     private static void singleText(String[] normals, String[] goal, String[] tokens, TreeDictionary treeDictionary){
         for (int i = 0; i < tokens.length; i++) {
-            Set<Grammeme> grammemes = new HashSet<>();
+            final Set<Grammeme> grammemes = new HashSet<>();
             if (treeDictionary.getWord(tokens[i]) != null) {
-                grammemes = treeDictionary.getWord(tokens[i]).getParent().getGrammemes();
                 grammemes.addAll(treeDictionary.getWord(tokens[i]).getGrammemes());
+                grammemes.addAll(
+                        treeDictionary
+                                .getWord(tokens[i])
+                                .getParent()
+                                .getGrammemes()
+                                .stream()
+                                .filter(
+                                        lemmaGrammeme -> grammemes.stream().noneMatch(
+                                                grammeme -> lemmaGrammeme.getParent().getName()
+                                                        .equals(grammeme.getParent().getName())
+                                        )
+                                )
+                                .collect(Collectors.toList())
+                );
             }
             outerLoop:
             for (int j = 0; j < goal.length; j++) {
@@ -64,8 +78,21 @@ public class ModelAnalyzer {
                         j++;
                         if (i >= tokens.length) return;
                         if (treeDictionary.getWord(tokens[i]) != null) {
-                            grammemes = treeDictionary.getWord(tokens[i]).getParent().getGrammemes();
                             grammemes.addAll(treeDictionary.getWord(tokens[i]).getGrammemes());
+                            grammemes.addAll(
+                                    treeDictionary
+                                            .getWord(tokens[i])
+                                            .getParent()
+                                            .getGrammemes()
+                                            .stream()
+                                            .filter(
+                                                    lemmaGrammeme -> grammemes.stream().noneMatch(
+                                                            grammeme -> lemmaGrammeme.getParent().getName()
+                                                                    .equals(grammeme.getParent().getName())
+                                                    )
+                                            )
+                                            .collect(Collectors.toList())
+                            );
                         }
                     }
 
