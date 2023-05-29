@@ -40,23 +40,7 @@ public class ModelAnalyzer {
     private static void singleText(String[] normals, String[] goal, String[] tokens, TreeDictionary treeDictionary){
         for (int i = 0; i < tokens.length; i++) {
             final Set<Grammeme> grammemes = new HashSet<>();
-            if (treeDictionary.getWord(tokens[i]) != null) {
-                grammemes.addAll(treeDictionary.getWord(tokens[i]).getGrammemes());
-                grammemes.addAll(
-                        treeDictionary
-                                .getWord(tokens[i])
-                                .getParent()
-                                .getGrammemes()
-                                .stream()
-                                .filter(
-                                        lemmaGrammeme -> grammemes.stream().noneMatch(
-                                                grammeme -> lemmaGrammeme.getParent().getName()
-                                                        .equals(grammeme.getParent().getName())
-                                        )
-                                )
-                                .collect(Collectors.toList())
-                );
-            }
+            getGrammemes(tokens[i], treeDictionary, grammemes);
             outerLoop:
             for (int j = 0; j < goal.length; j++) {
                 for (; j < goal.length && !goal[j].equals("+"); j++) {
@@ -77,27 +61,43 @@ public class ModelAnalyzer {
                         i++;
                         j++;
                         if (i >= tokens.length) return;
-                        if (treeDictionary.getWord(tokens[i]) != null) {
-                            grammemes.addAll(treeDictionary.getWord(tokens[i]).getGrammemes());
-                            grammemes.addAll(
-                                    treeDictionary
-                                            .getWord(tokens[i])
-                                            .getParent()
-                                            .getGrammemes()
-                                            .stream()
-                                            .filter(
-                                                    lemmaGrammeme -> grammemes.stream().noneMatch(
-                                                            grammeme -> lemmaGrammeme.getParent().getName()
-                                                                    .equals(grammeme.getParent().getName())
-                                                    )
-                                            )
-                                            .collect(Collectors.toList())
-                            );
-                        }
+                        getGrammemes(tokens[i], treeDictionary, grammemes);
                     }
 
                 }
             }
+        }
+    }
+
+    private static void getGrammemes(String word, TreeDictionary treeDictionary, Set<Grammeme> grammemes) {
+        if (treeDictionary.getWord(word) != null) {
+            grammemes.addAll(treeDictionary.getWord(word).getGrammemes());
+            grammemes.addAll(
+                    treeDictionary
+                            .getWord(word)
+                            .getParent()
+                            .getGrammemes()
+                            .stream()
+                            .filter(
+                                    lemmaGrammeme -> {
+                                        if (lemmaGrammeme.getParent() != null) {
+                                            return grammemes.stream().noneMatch(
+                                                    grammeme -> {
+                                                        if (grammeme.getParent() != null) {
+                                                            return lemmaGrammeme.getParent().getName()
+                                                                    .equals(grammeme.getParent().getName());
+                                                        } else {
+                                                            return false;
+                                                        }
+                                                    }
+                                            );
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                            )
+                            .collect(Collectors.toList())
+            );
         }
     }
 }
