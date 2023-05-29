@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="windows-1251" />
     <file url="file://$PROJECT_DIR$/src/main/resources/ru/nsu/fit/comput_ling_lab_1/articles_in_plain_text.txt" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources/ru/nsu/fit/comput_ling_lab_1/ngrams.txt" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus/Википедия-20230327075045.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus/Википедия-202303270752081.xml" charset="UTF-8" />
   </component>

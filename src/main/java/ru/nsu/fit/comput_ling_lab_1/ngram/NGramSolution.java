@@ -30,7 +30,7 @@ public class NGramSolution {
         NGramAnalyzer nGramAnalyzer = new NGramAnalyzer(treeDictionary, morphAnalyzer);
 
         File rootFolder = new File("E:/projects/comput-ling-lab-1/src/main/resources/ru/nsu/fit/comput_ling_lab_1/text_corpus");
-        nGramAnalyzer.analyze(rootFolder, 3, 10);
+        nGramAnalyzer.analyze(rootFolder, 2, 15);
 
         for (NGram nGram : nGramAnalyzer.findByNestedNGram(List.of("убийство", "человека"))) {
             System.out.println(nGram);

@@ -176,7 +176,8 @@ public class NGramAnalyzer {
         for (NGram nGram : nGramsByN.get(n - 1)) {
             List<NGram> leftAndRightExtensions = lemmaNGram.get(nGram.getLemmas().get(0))
                     .stream()
-                    .filter(it -> it.getLemmas().containsAll(nGram.getLemmas()))
+                    .filter(it -> it.getLemmas().containsAll(nGram.getLemmas())
+                            && !nGram.getLemmas().containsAll(it.getLemmas()))
                     .collect(Collectors.toList());
 
             for (NGram extension : leftAndRightExtensions) {
