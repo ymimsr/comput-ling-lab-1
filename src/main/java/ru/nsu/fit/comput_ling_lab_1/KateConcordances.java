@@ -1,15 +1,14 @@
 package ru.nsu.fit.comput_ling_lab_1;
 
 import ru.nsu.fit.comput_ling_lab_1.domain.Dictionary;
+import ru.nsu.fit.comput_ling_lab_1.domain.Grammeme;
 import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionary;
 import ru.nsu.fit.comput_ling_lab_1.domain.TreeDictionaryMapper;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class KateConcordances {
     public static void main(String[] args) throws URISyntaxException {
@@ -22,11 +21,19 @@ public class KateConcordances {
         System.out.println("Finished building IR");
         System.out.println("Ready to analyze");
 
-        HashMap<String, Integer> result = ConcordFinder.findConcordances(
-                new File(Solution.class.getResource("barbies").toURI()),
-                treeDictionary, "печать", 2, 1);
-        System.out.println(result.size());
-        for (Map.Entry<String, Integer> entry : result.entrySet()) System.out.println(entry.getValue() + " " + entry.getKey());
+        String testModel = "ПРИЛ ср им + СУЩ ср им";
+        List<String> s = ModelAnalyzer.analyzeByModel(
+                new File(Solution.class.getResource("barbies").toURI()), treeDictionary, testModel);
+        for (String str : s) {
+            System.out.println(str);
+        }
+
+
+//        HashMap<String, Integer> result = ConcordFinder.findConcordances(
+//                new File(Solution.class.getResource("barbies").toURI()),
+//                treeDictionary, "красивая кукла", 4, 4);
+//        System.out.println(result.size());
+//        for (Map.Entry<String, Integer> entry : result.entrySet()) System.out.println(entry.getValue() + " " + entry.getKey());
     }
     private static Dictionary parseXMLDictionary() {
         try {
