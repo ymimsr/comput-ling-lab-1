@@ -21,9 +21,10 @@ public class KateConcordances {
         System.out.println("Finished building IR");
         System.out.println("Ready to analyze");
 
-        String testModel = "ПРИЛ ср им + СУЩ ср им";
+        String testModel = "\"кукла\" + ГЛ 3л + ИНФ";
         List<String> s = ModelAnalyzer.analyzeByModel(
                 new File(Solution.class.getResource("barbies").toURI()), treeDictionary, testModel);
+        System.out.println(s.size());
         for (String str : s) {
             System.out.println(str);
         }

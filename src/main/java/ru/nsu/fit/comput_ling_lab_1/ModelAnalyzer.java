@@ -18,7 +18,7 @@ public class ModelAnalyzer {
         try {
             for (final File file : Objects.requireNonNull(rootFolder.listFiles())) {
                 String text = new String(Files.readAllBytes(file.toPath()), Charset.forName("windows-1251"));
-                String [] tokens = text.split("[ \n\r]");
+                String [] tokens = text.replaceAll("\\p{P}", "").split("[ \n\r]");
                 String [] normals = new String[tokens.length];
                 for (int i = 0; i < tokens.length; i++) {
                     List<String> list = m.getTextTokens(tokens[i]);
@@ -40,30 +40,54 @@ public class ModelAnalyzer {
     private static void singleText(String[] normals, String[] goal, String[] tokens, TreeDictionary treeDictionary){
         for (int i = 0; i < tokens.length; i++) {
             final Set<Grammeme> grammemes = new HashSet<>();
-            getGrammemes(tokens[i], treeDictionary, grammemes);
-            outerLoop:
-            for (int j = 0; j < goal.length; j++) {
-                for (; j < goal.length && !goal[j].equals("+"); j++) {
-                    int finalJ = j;
-                    if (grammemes.stream().noneMatch(p -> p.getAlias().equals(goal[finalJ])))
-                        break outerLoop;
-                    if (j + 1 >= goal.length) {
-                        StringBuilder fragmentBuild = new StringBuilder(tokens[i]);
-                        for (int k = i; k < goal.length + i - 1; k++) {
-                            if (!(k < tokens.length))
-                                break outerLoop;
-                            fragmentBuild.append(" ").append(tokens[k]);
+            int gap = 0;
+            StringBuilder fragmentBuild = new StringBuilder();
+            StringBuilder contextBuild = new StringBuilder();
+            if (!(i==0)) contextBuild.append(tokens[i - 1]);
+            int k_start = 0;
+            for (int j = 0; i + j < tokens.length; j++) {
+                grammemes.clear();
+                getGrammemes(tokens[i + j], treeDictionary, grammemes);
+                for (int k = k_start; k < goal.length; k++) {
+                    int finalK = k;
+                    if ((goal[finalK].charAt(0) == '\"' || (grammemes.stream().noneMatch(p -> p.getAlias().equals(goal[finalK])) &&
+                            !(grammemes.stream().anyMatch(p -> p.getAlias().equals("вн")) &&
+                                    goal[k].equals("им"))))
+                            && (goal[finalK].charAt(0) != '\"' || !Objects.equals(tokens[i + j], goal[finalK].replaceAll("\"", "")))) {
+//                    if (grammemes.stream().noneMatch(p -> p.getAlias().equals(goal[finalK])) &&
+//                            !(grammemes.stream().anyMatch(p -> p.getAlias().equals("вн")) &&
+//                                    goal[k].equals("им"))) {
+                        if (j > 0 && gap < 3) {
+                            contextBuild.append(" ").append(tokens[i + j]);
+                            gap++;
+                            break;
                         }
-                        String fragment = fragmentBuild.toString();
+                        j = tokens.length;
+                        break;
+                    }
+                    if (k + 1 >= goal.length) {
+                        fragmentBuild.append(" ").append(tokens[i + j]);
+                        contextBuild.append(" ").append(tokens[i + j]);
+                        if (i + j + 1 < tokens.length)
+                            contextBuild.append(" ").append(tokens[i + j + 1]);
+                        String fragment = fragmentBuild.toString().trim();
+                        String context = contextBuild.toString();
                         fragments.add(fragment);
+                        fragments.add(context);
+                        j = tokens.length;
+                        break;
                     }
-                    else if (goal[j + 1].equals("+")) {
-                        i++;
+                    else if (goal[k + 1].equals("+")) {
+                        gap = 0;
+                        k++;
+                        k_start = k + 1;
+                        fragmentBuild.append(" ").append(tokens[i + j]);
+                        contextBuild.append(" ").append(tokens[i + j]);
                         j++;
-                        if (i >= tokens.length) return;
-                        getGrammemes(tokens[i], treeDictionary, grammemes);
+                        if (i + j >= tokens.length) break;
+                        grammemes.clear();
+                        getGrammemes(tokens[i + j], treeDictionary, grammemes);
                     }
-
                 }
             }
         }
